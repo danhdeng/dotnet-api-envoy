@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace CoffeeApi
+namespace FoodAPI
 {
     public class Startup
     {
@@ -30,7 +30,7 @@ namespace CoffeeApi
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoffeeApi", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FoodAPI", Version = "v1" });
             });
         }
 
@@ -41,7 +41,7 @@ namespace CoffeeApi
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CoffeeApi v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FoodAPI v1"));
             }
 
             app.UseHttpsRedirection();

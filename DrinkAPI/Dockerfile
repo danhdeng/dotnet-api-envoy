@@ -13,7 +13,7 @@ RUN dotnet build -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
 COPY --from=build-env /app/out .
-ENTRYPOINT [ "dotnet", "TeaAPI.dll" ]
+ENTRYPOINT [ "dotnet", "DrinkAPI.dll" ]
 
 
 

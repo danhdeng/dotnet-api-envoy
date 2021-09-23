@@ -23,3 +23,24 @@ git remote add origin https://github.com/danhdeng/dotnet-api-envoy.git
 git branch -M main
 
 git push -u origin main
+
+# use powershelll to create https cert
+
+dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\FoodAPI.pfx -p P@55w0rd
+dotnet dev-certs https --trust
+
+dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\DrinkAPI.pfx -p P@55w0rd
+dotnet dev-certs https --trust
+
+# set user-secrets for each web api
+
+dotnet user-secrets set "Kestrel:Certificates:Development:Password" "P@55w0rd"
+
+# check the user-secrets in the local folder
+
+C:\Users\Dan\AppData\Roaming\Microsoft\UserSecrets
+
+# envoy proxy reference
+
+https://www.envoyproxy.io/
+

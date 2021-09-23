@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>Drink-API-f4f323ac-8f7e-45f9-a310-2da22509a520</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
