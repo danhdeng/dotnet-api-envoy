@@ -44,3 +44,9 @@ C:\Users\Dan\AppData\Roaming\Microsoft\UserSecrets
 
 https://www.envoyproxy.io/
 
+# build envoygateway image
+docker build -t envoygateway .
+
+# create the docker container with envoygateway image
+
+docker run -p 9901:9901  -p 10000:1000 danhuideng/envoygateway

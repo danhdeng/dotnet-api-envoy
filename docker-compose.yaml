@@ -1,5 +1,16 @@
 version: '3'
 services:
+  envoygateway:
+    build: Envoy/
+    ports:
+      - "9901:9901"
+      - "10000:10000"
+      - "10001:10001"
+    volumes:
+      - ./Envoy/envoy.yaml:/etc/envoy/envoy.yaml
+      - ./Envoy/https.crt:/etc/ssl/certs/https.crt
+      - ./Envoy/key.pem:/etc/ssl/certs/key.pem
+      
   drinkapi:
     build: DrinkAPI/
     ports:
@@ -12,6 +23,7 @@ services:
     volumes:
       - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
       - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https/
+
   foodapi:
     build: FoodAPI/
     ports:
