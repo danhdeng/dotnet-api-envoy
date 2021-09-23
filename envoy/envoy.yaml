@@ -1,6 +1,46 @@
+admin:
+  access_log_path: /tmp/admin_access.log
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 9901
 static_resources:
   listeners:
-    - address:
+    - name: listener_0
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 10000
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.http_connection_manager
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                stat_prefix: ingress_http
+                access_log:
+                  - name: envoy.access_loggers.stdout
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                http_filters:
+                  - name: envoy.filters.http.router
+                route_config:
+                  name: local_route
+                  virtual_hosts:
+                    - name: local_service
+                      domains: ["*"]
+                      routes:
+                        - match:
+                            prefix: "/f"
+                          route:
+                            prefix_rewrite: "/food"
+                            cluster: food_service
+                        - match:
+                            prefix: "/d"
+                          route:
+                            prefix_rewrite: "/drink"
+                            cluster: drink_service
+    - name: listener_1
+      address:
         socket_address:
           address: 0.0.0.0
           port_value: 10001
@@ -19,9 +59,15 @@ static_resources:
                         - "*"
                       routes:
                         - match:
-                            prefix: "/food"
+                            prefix: "/f"
                           route:
-                            cluster: service-https
+                            prefix_rewrite: "/food"
+                            cluster: food-service-https
+                        - match:
+                            prefix: "/d"
+                          route:
+                            prefix_rewrite: "/drink"
+                            cluster: drink-service-https
                 http_filters:
                   - name: envoy.filters.http.router
           transport_socket:
@@ -44,17 +90,59 @@ static_resources:
                       filename: "/etc/ssl/certs/key.pem"
 
   clusters:
-    - name: service-https
-      type: STRICT_DNS
-      lb_policy: ROUND_ROBIN
+    - name: food_service
+      type: LOGICAL_DNS
+      # Comment out the following line to test on v6 networks
+      dns_lookup_family: V4_ONLY
       load_assignment:
-        cluster_name: service-https
+        cluster_name: food_service
         endpoints:
           - lb_endpoints:
               - endpoint:
                   address:
                     socket_address:
                       address: foodapi
+                      port_value: 80
+    - name: drink_service
+      type: LOGICAL_DNS
+      # Comment out the following line to test on v6 networks
+      dns_lookup_family: V4_ONLY
+      load_assignment:
+        cluster_name: drink_service
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: drinkapi
+                      port_value: 80
+    - name: food-service-https
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: food-service-https
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: foodapi
+                      port_value: 443
+      transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+    - name: drink-service-https
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: drink-service-https
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: drinkapi
                       port_value: 443
       transport_socket:
         name: envoy.transport_sockets.tls

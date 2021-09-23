@@ -50,3 +50,6 @@ docker build -t envoygateway .
 # create the docker container with envoygateway image
 
 docker run -p 9901:9901  -p 10000:1000 danhuideng/envoygateway
+
+# to access envoy prox administration page
+http://localhost:9901/
